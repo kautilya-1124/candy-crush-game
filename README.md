@@ -1,5 +1,5 @@
 # 🍬 Candy Crunch — Match-3 Puzzle Game
-
+https://candycrush-livid.vercel.app/
 A complete Candy Crush–style game built with **plain HTML + CSS + JavaScript**.
 No build step, no dependencies, no external assets — all candy art is generated
 SVG and all sounds are synthesized with the Web Audio API.
