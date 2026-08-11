@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Candy Crunch — Match 3 Puzzle</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍬</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Decorative floating candies in the page background -->
+  <div class="bg-decor" aria-hidden="true">
+    <span class="bg-candy" style="left:6%;  top:12%; font-size:64px; animation-delay:0s">🍬</span>
+    <span class="bg-candy" style="left:88%; top:8%;  font-size:48px; animation-delay:1.2s">🍭</span>
+    <span class="bg-candy" style="left:80%; top:70%; font-size:72px; animation-delay:2.1s">🧁</span>
+    <span class="bg-candy" style="left:4%;  top:74%; font-size:56px; animation-delay:.6s">🍩</span>
+    <span class="bg-candy" style="left:45%; top:4%;  font-size:40px; animation-delay:1.7s">🍫</span>
+    <span class="bg-candy" style="left:92%; top:42%; font-size:44px; animation-delay:.3s">🍭</span>
+    <span class="bg-candy" style="left:14%; top:44%; font-size:38px; animation-delay:2.6s">🍬</span>
+    <span class="bg-candy" style="left:60%; top:86%; font-size:50px; animation-delay:1s">🍪</span>
+  </div>
+
+  <main id="app">
+
+    <!-- ======= Header: logo + level ======= -->
+    <header class="top-bar">
+      <h1 class="logo">Candy<span>Crunch</span></h1>
+      <div class="level-badge">Level <b id="levelVal">1</b></div>
+    </header>
+
+    <!-- ======= Stats: score / target / moves ======= -->
+    <section class="stats-bar">
+      <div class="stat score-box">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" id="scoreVal">0</div>
+        <div class="progress-track" title="Target progress">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="progress-star">⭐</div>
+        </div>
+        <div class="target-label">Target: <b id="targetVal">4000</b></div>
+      </div>
+      <div class="stat moves-box" id="movesBox">
+        <div class="stat-label">Moves</div>
+        <div class="moves-value" id="movesVal">30</div>
+      </div>
+    </section>
+
+    <!-- ======= Game board ======= -->
+    <section id="board-wrap">
+      <div id="board">
+        <div id="cells" aria-hidden="true"></div>     <!-- checkerboard background -->
+        <div id="candies"></div>                      <!-- candy layer -->
+        <div id="fx" aria-hidden="true"></div>        <!-- particles / floating text layer -->
+        <div id="banner" class="hidden" aria-hidden="true"></div>  <!-- "Sweet!" combo banner -->
+      </div>
+    </section>
+
+    <!-- ======= Controls ======= -->
+    <section class="controls">
+      <button id="pauseBtn"   class="ctl-btn" title="Pause (P)"><span class="ctl-ico">⏸</span><span class="ctl-txt">Pause</span></button>
+      <button id="restartBtn" class="ctl-btn" title="Restart level"><span class="ctl-ico">🔁</span><span class="ctl-txt">Restart</span></button>
+      <button id="hintBtn"    class="ctl-btn" title="Show a hint (H)"><span class="ctl-ico">💡</span><span class="ctl-txt">Hint</span></button>
+      <button id="shuffleBtn" class="ctl-btn" title="Shuffle board"><span class="ctl-ico">🔀</span><span class="ctl-txt">Shuffle</span></button>
+      <button id="muteBtn"    class="ctl-btn" title="Sound on/off (M)"><span class="ctl-ico" id="muteIco">🔊</span><span class="ctl-txt">Sound</span></button>
+    </section>
+  </main>
+
+  <!-- ======= Start overlay ======= -->
+  <div class="overlay" id="ovStart">
+    <div class="card">
+      <div class="card-candies">🍬 🍭 🍫 🧁 🍩</div>
+      <h2 class="card-title logo">Candy<span>Crunch</span></h2>
+      <p class="card-sub">Match 3 or more candies to crush them!<br>
+        Match 4 for <b>Striped</b> candies, 5 for a <b>Color Bomb</b>,<br>
+        and T/L shapes for <b>Wrapped</b> candies.</p>
+      <button id="playBtn" class="big-btn">▶ Play</button>
+      <p class="card-hint">Drag or tap two adjacent candies to swap.<br>Reach the target score before moves run out!</p>
+    </div>
+  </div>
+
+  <!-- ======= Pause overlay ======= -->
+  <div class="overlay hidden" id="ovPause">
+    <div class="card">
+      <div class="card-candies">⏸ 🍬</div>
+      <h2 class="card-title">Paused</h2>
+      <button id="resumeBtn"  class="big-btn">▶ Resume</button>
+      <button id="restartBtn2" class="ghost-btn">🔁 Restart Level</button>
+    </div>
+  </div>
+
+  <!-- ======= Victory overlay ======= -->
+  <div class="overlay hidden" id="ovWin">
+    <div class="card">
+      <div class="card-candies">🎉 🍬 🎉</div>
+      <h2 class="card-title sweet">Level Complete!</h2>
+      <div class="stars" id="winStars"><span>☆</span><span>☆</span><span>☆</span></div>
+      <p class="card-sub">Score: <b id="winScore">0</b><br><span id="winBonus"></span></p>
+      <button id="nextBtn" class="big-btn">Next Level ➜</button>
+      <button id="replayBtn" class="ghost-btn">🔁 Replay Level</button>
+    </div>
+  </div>
+
+  <!-- ======= Game over overlay ======= -->
+  <div class="overlay hidden" id="ovLose">
+    <div class="card">
+      <div class="card-candies">💔 🍬</div>
+      <h2 class="card-title">Out of Moves!</h2>
+      <p class="card-sub">Final score: <b id="loseScore">0</b><br>
+        Target was: <b id="loseTarget">0</b><br>
+        Best score: <b id="loseBest">0</b></p>
+      <button id="retryBtn" class="big-btn">🔁 Try Again</button>
+    </div>
+  </div>
+
+  <!-- small toast for messages like "Shuffling!" -->
+  <div id="toast" class="hidden"></div>
+
+  <script src="script.js"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+</body>
+</html>
